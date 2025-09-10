@@ -37,7 +37,7 @@ N
 gcc -o trelica.exe main.c node.c componente.c trelica.c equacoes.c visualizacao.c -lopengl32 -lglu32 -lgdi32 -lm
 
 # Executar
-trelica.exe
+.\trelica.exe
 ```
 
 O programa lerá automaticamente o arquivo `trelica.txt` e abrirá uma janela de visualização OpenGL.
