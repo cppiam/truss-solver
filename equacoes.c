@@ -409,3 +409,39 @@ void calcular_forcas_barras(const Trelica* trelica) {
         wprintf(L"  Módulo |F| = %10.2f N\n", fabs(F));
     }
 }
+
+void calcular_deformacoes_componentes(const Trelica* trelica) {
+    double area = 0.0001;        // 100 mm²
+    double E_madeira = 1.0e10;   // 10 GPa
+    double E_aco = 2.1e11;       // 210 GPa
+
+    wprintf(L"\n=== DEFORMAÇÕES NAS BARRAS ===\n");
+    wprintf(L"Usando área = %.0f mm²\n", area * 1e6);
+    wprintf(L"Material: Madeira (E = %.0f GPa)\n", E_madeira / 1e9);
+    for (int j = 0; j < trelica->componente_count; j++) {
+        Componente* comp = trelica->componentes[j];
+        double deformacao_madeira = 0.0;
+        if (comp->area > 0 && E_madeira > 0 && comp->comprimento > 0) {
+            deformacao_madeira = (comp->forca_reacao * comp->comprimento) / (comp->area * E_madeira);
+        }
+        if (fabs(deformacao_madeira) < 1e-8) {
+            wprintf(L"Barra %c-%c: Deformação = zero\n", comp->node1_nome, comp->node2_nome);
+        } else {
+            wprintf(L"Barra %c-%c: Deformação = %.5e\n", comp->node1_nome, comp->node2_nome, deformacao_madeira);
+        }
+    }
+
+    wprintf(L"\nMaterial: Aço (E = %.0f GPa)\n", E_aco / 1e9);
+    for (int j = 0; j < trelica->componente_count; j++) {
+        Componente* comp = trelica->componentes[j];
+        double deformacao_aco = 0.0;
+        if (comp->area > 0 && E_aco > 0 && comp->comprimento > 0) {
+            deformacao_aco = (comp->forca_reacao * comp->comprimento) / (comp->area * E_aco);
+        }
+        if (fabs(deformacao_aco) < 1e-8) {
+            wprintf(L"Barra %c-%c: Deformação = zero\n", comp->node1_nome, comp->node2_nome);
+        } else {
+            wprintf(L"Barra %c-%c: Deformação = %.5e\n", comp->node1_nome, comp->node2_nome, deformacao_aco);
+        }
+    }
+}
