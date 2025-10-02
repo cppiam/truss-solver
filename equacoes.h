@@ -16,5 +16,6 @@ void adicionar_equacoes_colinearidade(double*** A, double** b, int* n, int total
 
 // Calcular as forças internas nas barras
 void calcular_forcas_barras(const Trelica* trelica);
+void calcular_deformacoes_componentes(const Trelica* trelica);
 
 #endif
