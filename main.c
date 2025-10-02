@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <wchar.h>
 #include <locale.h>
+#include <math.h>
 #include "trelica.h"
 #include "equacoes.h"
 #include "visualizacao.h"
@@ -56,6 +57,29 @@ int main() {
     wprintf(L"Montando equações de equilíbrio...\n");
     montar_equacoes_equilibrio(my_trelica);
     wprintf(L"Equações de equilíbrio montadas.\n\n");
+
+    // Calcular deformações (após calcular forças)
+    // Valores arbitrários para madeira:
+    double area_madeira = 0.0001; // 100 mm²
+    double E_madeira = 1.0e10;    // 10 GPa
+    for (int i = 0; i < my_trelica->componente_count; i++) {
+        Componente* comp = my_trelica->componentes[i];
+        Node* n1 = NULL;
+        Node* n2 = NULL;
+        // Encontrar os nós
+        for (int k = 0; k < my_trelica->node_count; k++) {
+            if (my_trelica->nodes[k]->nome == comp->node1_nome) n1 = my_trelica->nodes[k];
+            if (my_trelica->nodes[k]->nome == comp->node2_nome) n2 = my_trelica->nodes[k];
+        }
+        double dx = n2->x - n1->x;
+        double dy = n2->y - n1->y;
+        double comprimento = sqrt(dx*dx + dy*dy);
+        comp->area = area_madeira;
+        comp->E = E_madeira;
+        comp->comprimento = comprimento;
+    }
+    calcular_deformacoes_componentes(my_trelica);
+    wprintf(L"Deformações calculadas.\n\n");
 
     // Visualizar a treliça com OpenGL
     wprintf(L"Iniciando visualização da treliça...\n");
